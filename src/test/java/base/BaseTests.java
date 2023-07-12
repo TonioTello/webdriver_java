@@ -22,7 +22,12 @@ public class BaseTests {
 
     @BeforeClass
     public void setUp(){
-        System.setProperty("webdriver.chrome.driver", "resources/chromedriver.exe");
+        var driverExtention = ".exe";
+        if(System.getenv("RUNNER_OS") != null){
+            driverExtention = "-linux";
+        }
+
+        System.setProperty("webdriver.chrome.driver", "resources/chromedriver" + driverExtention);
         driver = new EventFiringWebDriver(new ChromeDriver(getChromeOptions()));
         driver.register(new EventReporter());
     }
@@ -59,7 +64,10 @@ public class BaseTests {
     private ChromeOptions getChromeOptions(){
         ChromeOptions options = new ChromeOptions();
         options.addArguments("disable-infobars");
-        //options.setHeadless(true);
+
+        // Default headless mode off, set to true based on env var
+        var headless = Boolean.parseBoolean(System.getenv("HEADLESS_CHROME")) | false;
+        options.setHeadless(headless);
         return options;
     }
 
